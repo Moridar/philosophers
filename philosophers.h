@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/01/10 19:19:32 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/01/10 20:56:08 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,3 @@ typedef struct s_table
 	int		num_of_times_each_philo_must_eat;
 	t_philo	*philos;
 }	t_table;
-
-struct timeval

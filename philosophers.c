@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/01/10 19:33:26 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/01/10 21:17:19 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,22 @@ static int	strave(struct timeval last_eat, int time_to_die)
 	return (0);
 }
 
+static void	philo_eat(t_philo *philo, t_table *table)
+{
+	struct timeval	current_time;
+
+	philo->left_fork = 0;
+	philo->right_fork = 0;
+	gettimeofday(&current_time, NULL);
+	philo->last_eat = current_time;
+	printf("%ld: philo %d is eating\n", current_time.tv_sec, philo->id);
+	usleep(table->time_to_eat);
+
+}
+
 void	philo_start(int id, t_table *table)
 {
-	t_philo	philo;
+	t_philo			philo;
 	struct timeval	current_time;
 
 	philo.id = id + 1;
@@ -41,10 +54,11 @@ void	philo_start(int id, t_table *table)
 			if (philo.left_fork && philo.right_fork)
 				break ;
 			if (starve(philo.last_eat, table->time_to_die))
-				philo.is_alive = 0;
-			philo_eat(&philo);
-			usleep(table->time_to_eat);
+				printf("philo %d died\n", philo.id);
 		}
+		philo_eat(&philo, table);
+		printf("philo %d is sleeping\n", philo.id);
+		usleep(table->time_to_sleep);
 	}
 }
 

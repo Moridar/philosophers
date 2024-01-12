@@ -3,39 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsyvasal <bsyvasal@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/01/10 21:17:19 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/01/12 16:45:03 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-static int	strave(struct timeval last_eat, int time_to_die)
-{
-	struct timeval	current_time;
-
-	gettimeofday(&current_time, NULL);
-	if (current_time.tv_sec > last_eat.tv_sec)
-		return (1);
-	if (current_time.tv_usec > last_eat.tv_usec)
-		return (1);
-	return (0);
-}
-
-static void	philo_eat(t_philo *philo, t_table *table)
-{
-	struct timeval	current_time;
-
-	philo->left_fork = 0;
-	philo->right_fork = 0;
-	gettimeofday(&current_time, NULL);
-	philo->last_eat = current_time;
-	printf("%ld: philo %d is eating\n", current_time.tv_sec, philo->id);
-	usleep(table->time_to_eat);
-
-}
 
 void	philo_start(int id, t_table *table)
 {
@@ -53,12 +28,12 @@ void	philo_start(int id, t_table *table)
 		{
 			if (philo.left_fork && philo.right_fork)
 				break ;
-			if (starve(philo.last_eat, table->time_to_die))
-				printf("philo %d died\n", philo.id);
+			is_straved(&philo, table->time_to_die);
 		}
 		philo_eat(&philo, table);
-		printf("philo %d is sleeping\n", philo.id);
-		usleep(table->time_to_sleep);
+		printf("%d: philo %d is sleeping\n", get_ms_since_start(), philo.id);
+		usleep(table->time_to_sleep * 1000);
+		printf("%d: philo %d is thinking\n", get_ms_since_start(), philo.id);
 	}
 }
 
@@ -93,10 +68,11 @@ int	main(int argc, char **argv)
 	if (argc == 5 || argc == 6)
 		if (!initialise(argc, argv, &table))
 			return (printf("Error: one more more wrong argument\n"));
-	else
+	if (argc < 5 || argc > 6)
 		return (printf("Error: wrong number of arguments\n"));
-	printf("time: %d\n", gettimeofday(&current_time, NULL));
-	printf("time: %ld, msec: %ld\n", current_time.tv_sec, current_time.tv_usec);
+	printf("time start: %d ms\n", get_ms_since_start());
+	usleep(10000);
+	printf("usleep (10000)\ntime: %d ms\n", get_ms_since_start());
 	gettimeofday(&current_time, NULL);
 	free(table.forks);
 	free(table.philos);

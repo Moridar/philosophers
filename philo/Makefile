@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bsyvasal <bsyvasal@student.42.fr>          +#+  +:+       +#+         #
+#    By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/10 20:43:18 by bsyvasal          #+#    #+#              #
-#    Updated: 2024/01/10 20:46:35 by bsyvasal         ###   ########.fr        #
+#    Updated: 2024/01/15 14:15:08 by bsyvasal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,8 @@ NAME = philosophers
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
 SRC = 	philosophers \
-		utils
+		utils \
+		ft_atoi
 		
 SRCS = $(addsuffix .c, $(SRC))
 OBJS = $(addsuffix .o, $(SRC))

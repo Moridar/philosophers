@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/01/15 16:08:58 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/20 15:05:36 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
+
+struct	s_table;
 
 typedef struct s_philo
 {
@@ -28,6 +30,7 @@ typedef struct s_philo
 	struct timeval	last_eat;
 	pthread_t		tid;
 	pthread_mutex_t	*lock;
+	struct s_table	*table;
 }	t_philo;
 
 typedef struct s_table
@@ -38,6 +41,7 @@ typedef struct s_table
 	int		time_to_eat;
 	int		time_to_sleep;
 	int		num_of_times_each_philo_must_eat;
+	int		dead_philo;
 	t_philo	*philos;
 }	t_table;
 

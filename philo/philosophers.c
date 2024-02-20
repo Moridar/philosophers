@@ -6,11 +6,26 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/01/15 16:22:45 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/20 15:07:23 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+void	exit_detach(t_philo *philo)
+{
+	int	i;
+
+	printf("exit\n");
+	i = 0;
+	while (i < philo->table->num_of_philosophers)
+	{
+		printf("detaching philo[%d]\n", i);
+		if (philo->id != philo->table->philos[i].id)
+			pthread_detach(philo->table->philos[i].tid);
+		i++;
+	}
+}
 
 void	*philo_start(void *arg)
 {
@@ -22,13 +37,22 @@ void	*philo_start(void *arg)
 	{
 		while (philo->is_alive)
 		{
+			if (philo->table->dead_philo)
+			return (NULL);
 			if (philo_eat(philo))
 				break ;
 			if (is_straved(philo))
+			{
+				philo->table->dead_philo = 1;
 				return (NULL);
+			}
 		}
+		if (philo->table->dead_philo)
+			return (NULL);
 		printf("%d: philo %d is sleeping\n", get_ms_since_start(), philo->id);
 		usleep(philo->time_to_sleep * 1000);
+		if (philo->table->dead_philo)
+			return (NULL);
 		printf("%d: philo %d is thinking\n", get_ms_since_start(), philo->id);
 	}
 	return (NULL);
@@ -71,6 +95,7 @@ static int	init_philos(t_table *table, pthread_mutex_t	*lock)
 		table->philos[i].time_to_eat = table->time_to_eat;
 		table->philos[i].time_to_sleep = table->time_to_sleep;
 		table->philos[i].lock = lock;
+		table->philos[i].table = table;
 	}
 	return (1);
 }
@@ -83,6 +108,7 @@ static int	initialise(int argc, char **argv, t_table *table)
 	while (++i < argc)
 		if (!ft_isonlydigits(argv[i]))
 			return (0);
+	table->dead_philo = 0;
 	table->num_of_philosophers = ft_atoi(argv[1]);
 	table->time_to_die = ft_atoi(argv[2]);
 	table->time_to_eat = ft_atoi(argv[3]);

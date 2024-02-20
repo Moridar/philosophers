@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/01/15 16:28:38 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/20 15:07:46 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int	philo_eat(t_philo *philo)
 	struct timeval	current_time;
 
 	if (*philo->left_fork == 0)
-		printf("phil %d. Lfork: %d, Rfork: %d\n", philo->id, *philo->left_fork, *philo->right_fork);
+		//printf("phil %d. Lfork: %d, Rfork: %d\n", philo->id, *philo->left_fork, *philo->right_fork);
 	pthread_mutex_lock(philo->lock);
 	if (*philo->left_fork == 0 || *philo->right_fork == 0)
 	{
@@ -60,6 +60,8 @@ int	philo_eat(t_philo *philo)
 	philo->last_eat = current_time;
 	printf("%d: philo %d is eating\n", get_ms_since_start(), philo->id);
 	usleep(philo->time_to_eat * 1000);
+	if (philo->table->dead_philo)
+			return (1);
 	printf("%d: philo %d finished eating\n", get_ms_since_start(), philo->id);
 	*philo->left_fork = 1;
 	*philo->right_fork = 1;

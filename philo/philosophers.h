@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/20 15:05:36 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/21 15:18:03 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,7 @@ typedef struct s_philo
 	int				is_alive;
 	int				*left_fork;
 	int				*right_fork;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
+	int				number_of_times_to_eat;
 	struct timeval	last_eat;
 	pthread_t		tid;
 	pthread_mutex_t	*lock;

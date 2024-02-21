@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/20 15:07:23 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/21 15:14:35 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,27 +33,21 @@ void	*philo_start(void *arg)
 
 	philo = arg;
 	gettimeofday(&philo->last_eat, NULL);
-	while (philo->is_alive)
+	while (philo->table->dead_philo == 0)
 	{
-		while (philo->is_alive)
+		while (philo->table->dead_philo == 0)
 		{
-			if (philo->table->dead_philo)
-			return (NULL);
-			if (philo_eat(philo))
-				break ;
 			if (is_straved(philo))
-			{
 				philo->table->dead_philo = 1;
-				return (NULL);
-			}
+			if (philo->table->dead_philo || philo_eat(philo))
+				break ;
 		}
 		if (philo->table->dead_philo)
 			return (NULL);
-		printf("%d: philo %d is sleeping\n", get_ms_since_start(), philo->id);
-		usleep(philo->time_to_sleep * 1000);
+		usleep(philo->table->time_to_sleep * 1000);
 		if (philo->table->dead_philo)
 			return (NULL);
-		printf("%d: philo %d is thinking\n", get_ms_since_start(), philo->id);
+		printf("%6d: %d is thinking\n", get_ms_since_start(), philo->id);
 	}
 	return (NULL);
 }
@@ -63,9 +57,9 @@ static void	event_start(t_table *table)
 	int		i;
 
 	i = 0;
+	get_ms_since_start();
 	while (i < table->num_of_philosophers)
 	{
-		printf("i: %d\n", i);
 		pthread_create(&table->philos[i].tid, NULL,
 			philo_start, (void *) &table->philos[i]);
 		i++;
@@ -90,12 +84,10 @@ static int	init_philos(t_table *table, pthread_mutex_t	*lock)
 		table->philos[i].is_alive = 1;
 		table->philos[i].left_fork = &table->forks[i];
 		table->philos[i].right_fork
-			= &table->forks[i + 1 % table->num_of_philosophers];
-		table->philos[i].time_to_die = table->time_to_die;
-		table->philos[i].time_to_eat = table->time_to_eat;
-		table->philos[i].time_to_sleep = table->time_to_sleep;
+			= &table->forks[(i + 1) % table->num_of_philosophers];
 		table->philos[i].lock = lock;
 		table->philos[i].table = table;
+		table->philos[i].number_of_times_to_eat = 0;
 	}
 	return (1);
 }
@@ -142,6 +134,8 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 		return (printf("Error: wrong number of arguments\n"));
 	init_philos(&table, &lock);
+	if (table.philos[0].left_fork == table.philos[0].right_fork)
+		table.philos[0].right_fork = NULL;
 	event_start(&table);
 	free(table.forks);
 	free(table.philos);

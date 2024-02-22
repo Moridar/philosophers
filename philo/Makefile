@@ -6,19 +6,20 @@
 #    By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/10 20:43:18 by bsyvasal          #+#    #+#              #
-#    Updated: 2024/01/15 14:15:08 by bsyvasal         ###   ########.fr        #
+#    Updated: 2024/02/22 13:39:57 by bsyvasal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philosophers
+NAME = philo
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
-SRC = 	philosophers \
-		utils \
-		ft_atoi
+FILES =	philosophers \
+		philo_routine \
+		philo_utils \
+		philo_table
 		
-SRCS = $(addsuffix .c, $(SRC))
-OBJS = $(addsuffix .o, $(SRC))
+SRCS = $(addsuffix .c, $(FILES))
+OBJS = $(addsuffix .o, $(FILES))
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)

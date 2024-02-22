@@ -6,139 +6,117 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/21 15:14:35 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/22 15:58:39 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	exit_detach(t_philo *philo)
-{
-	int	i;
-
-	printf("exit\n");
-	i = 0;
-	while (i < philo->table->num_of_philosophers)
-	{
-		printf("detaching philo[%d]\n", i);
-		if (philo->id != philo->table->philos[i].id)
-			pthread_detach(philo->table->philos[i].tid);
-		i++;
-	}
-}
-
-void	*philo_start(void *arg)
-{
-	t_philo			*philo;
-
-	philo = arg;
-	gettimeofday(&philo->last_eat, NULL);
-	while (philo->table->dead_philo == 0)
-	{
-		while (philo->table->dead_philo == 0)
-		{
-			if (is_straved(philo))
-				philo->table->dead_philo = 1;
-			if (philo->table->dead_philo || philo_eat(philo))
-				break ;
-		}
-		if (philo->table->dead_philo)
-			return (NULL);
-		usleep(philo->table->time_to_sleep * 1000);
-		if (philo->table->dead_philo)
-			return (NULL);
-		printf("%6d: %d is thinking\n", get_ms_since_start(), philo->id);
-	}
-	return (NULL);
-}
-
 static void	event_start(t_table *table)
 {
-	int		i;
+	int				i;
+	struct timeval	curr;
 
 	i = 0;
-	get_ms_since_start();
+	gettimeofday(&curr, NULL);
+	table->starttime = (curr.tv_sec * 1000) + (curr.tv_usec / 1000);
 	while (i < table->num_of_philosophers)
 	{
 		pthread_create(&table->philos[i].tid, NULL,
 			philo_start, (void *) &table->philos[i]);
 		i++;
 	}
-	i = 0;
-	while (i < table->num_of_philosophers)
-	{
-		pthread_join(table->philos[i].tid, NULL);
-		i++;
-	}
+	pthread_create(&table->tid, NULL, table_start, (void *) table);
+	pthread_join(table->tid, NULL);
+	table->exit = 1;
+	while (--i > 0)
+		pthread_detach(table->philos[i].tid);
+	return ;
 }
 
-static int	init_philos(t_table *table, pthread_mutex_t	*lock)
+static int	philo_initialise(t_table *table)
 {
 	int	i;
 
 	i = -1;
 	while (++i < table->num_of_philosophers)
 	{
-		table->forks[i] = 1;
 		table->philos[i].id = i + 1;
-		table->philos[i].is_alive = 1;
 		table->philos[i].left_fork = &table->forks[i];
 		table->philos[i].right_fork
 			= &table->forks[(i + 1) % table->num_of_philosophers];
-		table->philos[i].lock = lock;
 		table->philos[i].table = table;
-		table->philos[i].number_of_times_to_eat = 0;
+		table->philos[i].meals_eaten = 0;
 	}
 	return (1);
 }
 
-static int	initialise(int argc, char **argv, t_table *table)
+static int	forks_initialise(t_table *table)
 {
-	int		i;
+	int	i;
 
 	i = 0;
-	while (++i < argc)
-		if (!ft_isonlydigits(argv[i]))
+	while (i < table->num_of_philosophers)
+	{
+		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
+		{
+			while (--i >= 0)
+				pthread_mutex_destroy(table->forks + i);
+			printf("Error: Mutex\n");
 			return (0);
-	table->dead_philo = 0;
+		}
+		i++;
+	}
+	return (1);
+}
+
+static int	table_initialise(int argc, char **argv, t_table *table)
+{
+	table->exit = 0;
 	table->num_of_philosophers = ft_atoi(argv[1]);
 	table->time_to_die = ft_atoi(argv[2]);
 	table->time_to_eat = ft_atoi(argv[3]);
 	table->time_to_sleep = ft_atoi(argv[4]);
-	table->forks = malloc(sizeof(int) * table->num_of_philosophers);
-	if (!table->forks)
-		return (0);
-	table->philos = malloc(sizeof(t_philo) * table->num_of_philosophers);
-	if (!table->philos)
+	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_of_philosophers);
+	if (table->forks)
+		table->philos = malloc(sizeof(t_philo) * table->num_of_philosophers);
+	if (!table->philos || !table->forks)
 	{
+		printf("Error: Malloc\n");
 		free(table->forks);
 		return (0);
 	}
+	if (forks_initialise(table) == 0)
+	{
+		free(table->forks);
+		free(table->philos);
+		return (0);
+	}
+	table->required_meals = -1;
 	if (argc == 6)
-		table->num_of_times_each_philo_must_eat = ft_atoi(argv[5]);
-	else
-		table->num_of_times_each_philo_must_eat = -1;
+		table->required_meals = ft_atoi(argv[5]);
 	return (1);
 }
 
 int	main(int argc, char **argv)
 {
 	t_table			table;
-	pthread_mutex_t	lock;
+	int				i;
 
-	if (pthread_mutex_init(&lock, NULL) != 0)
-		return (printf("mutex init failed\n"));
-	if (argc == 5 || argc == 6)
-		if (!initialise(argc, argv, &table))
-			return (printf("Error: one more more wrong argument\n"));
 	if (argc < 5 || argc > 6)
-		return (printf("Error: wrong number of arguments\n"));
-	init_philos(&table, &lock);
-	if (table.philos[0].left_fork == table.philos[0].right_fork)
-		table.philos[0].right_fork = NULL;
+		return (printf("Error: Wrong number of arguments\n"));
+	i = 0;
+	while (++i < argc)
+		if (!ft_isonlydigits(argv[i]))
+			return (printf("Error: Non-numerical argument\n"));
+	if (!table_initialise(argc, argv, &table))
+		return (1);
+	philo_initialise(&table);
 	event_start(&table);
+	i = 0;
+	while (i < table.num_of_philosophers)
+		pthread_mutex_destroy(&table.forks[i++]);
 	free(table.forks);
 	free(table.philos);
-	pthread_mutex_destroy(&lock);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/22 16:49:37 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/22 17:02:57 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,11 @@ static int	forks_initialise(t_table *table)
 
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_of_philosophers);
 	if (!table->forks)
+	{
+		free(table->philos);
+		printf("Error: Malloc\n");
 		return (0);
+	}
 	i = 0;
 	while (i < table->num_of_philosophers)
 	{
@@ -65,6 +69,8 @@ static int	forks_initialise(t_table *table)
 			while (--i >= 0)
 				pthread_mutex_destroy(&table->forks[i]);
 			printf("Error: Mutex\n");
+			free(table->forks);
+			free(table->philos);
 			return (0);
 		}
 		i++;
@@ -84,13 +90,12 @@ static int	table_initialise(int argc, char **argv, t_table *table)
 		table->required_meals = ft_atoi(argv[5]);
 	table->philos = malloc(sizeof(t_philo) * table->num_of_philosophers);
 	if (table->philos == NULL)
-		return (0);
-	if (forks_initialise(table) == 0)
 	{
-		free(table->forks);
-		free(table->philos);
+		printf("Error: Malloc\n");
 		return (0);
 	}
+	if (forks_initialise(table) == 0)
+		return (0);
 	return (1);
 }
 

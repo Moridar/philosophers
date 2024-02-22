@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/22 15:58:39 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/22 16:49:37 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static void	event_start(t_table *table)
 	table->exit = 1;
 	while (--i > 0)
 		pthread_detach(table->philos[i].tid);
-	return ;
 }
 
 static int	philo_initialise(t_table *table)
@@ -55,13 +54,16 @@ static int	forks_initialise(t_table *table)
 {
 	int	i;
 
+	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_of_philosophers);
+	if (!table->forks)
+		return (0);
 	i = 0;
 	while (i < table->num_of_philosophers)
 	{
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
 		{
 			while (--i >= 0)
-				pthread_mutex_destroy(table->forks + i);
+				pthread_mutex_destroy(&table->forks[i]);
 			printf("Error: Mutex\n");
 			return (0);
 		}
@@ -77,24 +79,18 @@ static int	table_initialise(int argc, char **argv, t_table *table)
 	table->time_to_die = ft_atoi(argv[2]);
 	table->time_to_eat = ft_atoi(argv[3]);
 	table->time_to_sleep = ft_atoi(argv[4]);
-	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_of_philosophers);
-	if (table->forks)
-		table->philos = malloc(sizeof(t_philo) * table->num_of_philosophers);
-	if (!table->philos || !table->forks)
-	{
-		printf("Error: Malloc\n");
-		free(table->forks);
+	table->required_meals = -1;
+	if (argc == 6)
+		table->required_meals = ft_atoi(argv[5]);
+	table->philos = malloc(sizeof(t_philo) * table->num_of_philosophers);
+	if (table->philos == NULL)
 		return (0);
-	}
 	if (forks_initialise(table) == 0)
 	{
 		free(table->forks);
 		free(table->philos);
 		return (0);
 	}
-	table->required_meals = -1;
-	if (argc == 6)
-		table->required_meals = ft_atoi(argv[5]);
 	return (1);
 }
 

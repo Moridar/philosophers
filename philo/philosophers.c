@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/22 17:02:57 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/23 11:05:56 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,16 @@
 static void	event_start(t_table *table)
 {
 	int				i;
-	struct timeval	curr;
 
 	i = 0;
-	gettimeofday(&curr, NULL);
-	table->starttime = (curr.tv_sec * 1000) + (curr.tv_usec / 1000);
+	table->starttime_usec = now_usec();
+	if (table->num_of_philosophers == 1)
+	{
+		pthread_create(&table->philos[0].tid, NULL,
+			single_philo_start, &table->philos[0]);
+		pthread_join(table->philos[0].tid, NULL);
+		return ;
+	}
 	while (i < table->num_of_philosophers)
 	{
 		pthread_create(&table->philos[i].tid, NULL,

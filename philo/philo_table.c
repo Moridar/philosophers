@@ -6,27 +6,32 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/22 16:01:16 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/23 11:12:43 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	since_start(t_philo *philo)
+double	now_usec(void)
 {
+	double			now_usec;
 	struct timeval	curr;
-	int				data_time;
 
 	gettimeofday(&curr, NULL);
-	data_time = (curr.tv_sec * 1000) + (curr.tv_usec / 1000);
-	return (data_time - philo->table->starttime);
+	now_usec = (curr.tv_sec % 1000000 * 1000000) + (curr.tv_usec);
+	return (now_usec);
+}
+
+int	ms_since_start(t_philo *philo)
+{
+	return ((now_usec() - philo->table->starttime_usec) / 1000);
 }
 
 static int	is_straved(t_philo *philo)
 {
-	if (since_start(philo) - philo->last_eat < philo->table->time_to_die)
+	if (ms_since_start(philo) - philo->last_eat < philo->table->time_to_die)
 		return (0);
-	printf("%6d philo %d died\n", since_start(philo), philo->id);
+	printf("%6d philo %d died\n",ms_since_start(philo), philo->id);
 	return (1);
 }
 
@@ -51,7 +56,10 @@ void	*table_start(void *arg)
 			if (table->philos[i].meals_eaten < table->required_meals)
 				break ;
 			if (++i == table->num_of_philosophers)
+			{
+				printf("everyone had %d meals\n", table->required_meals);
 				return (NULL);
+			}
 		}
 		usleep(1000);
 	}

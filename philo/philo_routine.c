@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/22 16:04:25 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/23 11:13:25 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,19 @@
 
 static int	philo_sleep(int duration, t_philo *philo)
 {
-	int	wakeup;
+	double	wakeup;
+	double	timeleft;
 
-	wakeup = (since_start(philo) + duration);
-	wakeup -= 1;
-	while (since_start(philo) <= wakeup)
+	wakeup = now_usec() + duration * 1000;
+	while (1)
 	{
+		timeleft = wakeup - now_usec();
 		if (philo->table->exit)
 			return (0);
-		usleep(500);
+		if (timeleft > 0)
+			usleep(500);
+		if (timeleft <= 0)
+			break ;
 	}
 	return (1);
 }
@@ -45,7 +49,7 @@ static int	philo_eat(t_philo *philo)
 		pthread_mutex_unlock(philo->right_fork);
 		return (0);
 	}
-	time_since_start = since_start(philo);
+	time_since_start = ms_since_start(philo);
 	philo->last_eat = time_since_start;
 	printf("%6d %d has taken a fork\n", time_since_start, philo->id);
 	printf("%6d %d has taken a fork\n", time_since_start, philo->id);
@@ -61,18 +65,28 @@ void	*philo_start(void *arg)
 	t_philo			*philo;
 
 	philo = arg;
-	philo->last_eat = since_start(philo);
+	philo->last_eat = ms_since_start(philo);
 	while (philo->table->exit == 0)
 	{
 		while (philo->table->exit == 0 && philo_eat(philo) == 0)
 			;
 		if (philo->table->exit)
 			return (NULL);
-		printf("%6d %d is sleeping\n", since_start(philo), philo->id);
-		philo_sleep(philo->table->time_to_sleep, philo);
-		if (philo->table->exit)
+		printf("%6d %d is sleeping\n",ms_since_start(philo), philo->id);
+		if (philo_sleep(philo->table->time_to_sleep, philo) == 0)
 			return (NULL);
-		printf("%6d %d is thinking\n", since_start(philo), philo->id);
+		printf("%6d %d is thinking\n",ms_since_start(philo), philo->id);
 	}
+	return (NULL);
+}
+
+void	*single_philo_start(void *arg)
+{
+	t_philo			*philo;
+
+	philo = arg;
+	printf("%6d 1 has taken a fork\n", 0);
+	usleep(philo->table->time_to_die * 1000);
+	printf("%6d 1 has died\n", philo->table->time_to_die);
 	return (NULL);
 }

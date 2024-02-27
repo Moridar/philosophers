@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/23 11:12:43 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/27 13:57:26 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ double	now_usec(void)
 	struct timeval	curr;
 
 	gettimeofday(&curr, NULL);
-	now_usec = (curr.tv_sec % 1000000 * 1000000) + (curr.tv_usec);
+	now_usec = (curr.tv_sec * 1000000) + (curr.tv_usec);
 	return (now_usec);
 }
 
@@ -31,7 +31,7 @@ static int	is_straved(t_philo *philo)
 {
 	if (ms_since_start(philo) - philo->last_eat < philo->table->time_to_die)
 		return (0);
-	printf("%6d philo %d died\n",ms_since_start(philo), philo->id);
+	printf("%6d philo %d died\n", ms_since_start(philo), philo->id);
 	return (1);
 }
 
@@ -56,10 +56,7 @@ void	*table_start(void *arg)
 			if (table->philos[i].meals_eaten < table->required_meals)
 				break ;
 			if (++i == table->num_of_philosophers)
-			{
-				printf("everyone had %d meals\n", table->required_meals);
 				return (NULL);
-			}
 		}
 		usleep(1000);
 	}

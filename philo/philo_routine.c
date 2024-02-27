@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/23 11:13:25 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/27 13:53:29 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,18 @@ static int	philo_sleep(int duration, t_philo *philo)
 	double	wakeup;
 	double	timeleft;
 
-	wakeup = now_usec() + duration * 1000;
+	wakeup = now_usec() + duration * 1000 - 150;
 	while (1)
 	{
 		timeleft = wakeup - now_usec();
 		if (philo->table->exit)
 			return (0);
-		if (timeleft > 0)
-			usleep(500);
-		if (timeleft <= 0)
+		if (timeleft < 500)
 			break ;
+		usleep(500);
 	}
+	if (timeleft > 0)
+		usleep(timeleft);
 	return (1);
 }
 
@@ -72,10 +73,10 @@ void	*philo_start(void *arg)
 			;
 		if (philo->table->exit)
 			return (NULL);
-		printf("%6d %d is sleeping\n",ms_since_start(philo), philo->id);
+		printf("%6d %d is sleeping\n", ms_since_start(philo), philo->id);
 		if (philo_sleep(philo->table->time_to_sleep, philo) == 0)
 			return (NULL);
-		printf("%6d %d is thinking\n",ms_since_start(philo), philo->id);
+		printf("%6d %d is thinking\n", ms_since_start(philo), philo->id);
 	}
 	return (NULL);
 }

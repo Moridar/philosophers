@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/23 11:05:56 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/27 14:07:02 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void	event_start(t_table *table)
 	pthread_join(table->tid, NULL);
 	table->exit = 1;
 	while (--i > 0)
-		pthread_detach(table->philos[i].tid);
+		pthread_join(table->philos[i].tid, NULL);
 }
 
 static int	philo_initialise(t_table *table)

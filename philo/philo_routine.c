@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/27 13:53:29 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/27 16:47:42 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	philo_sleep(int duration, t_philo *philo)
 	double	wakeup;
 	double	timeleft;
 
-	wakeup = now_usec() + duration * 1000 - 150;
+	wakeup = now_usec() + duration * 1000 - 100;
 	while (1)
 	{
 		timeleft = wakeup - now_usec();
@@ -34,8 +34,6 @@ static int	philo_sleep(int duration, t_philo *philo)
 
 static int	philo_eat(t_philo *philo)
 {
-	int				time_since_start;
-
 	if (pthread_mutex_lock(philo->left_fork) != 0)
 		return (0);
 	if (pthread_mutex_lock(philo->right_fork) != 0)
@@ -50,11 +48,10 @@ static int	philo_eat(t_philo *philo)
 		pthread_mutex_unlock(philo->right_fork);
 		return (0);
 	}
-	time_since_start = ms_since_start(philo);
-	philo->last_eat = time_since_start;
-	printf("%6d %d has taken a fork\n", time_since_start, philo->id);
-	printf("%6d %d has taken a fork\n", time_since_start, philo->id);
-	printf("%6d %d is eating\n", time_since_start, philo->id);
+	philo->last_eat = ms_since_start(philo);
+	printf("%6d %d has taken a fork\n%6d %d has taken a fork\n"
+		"%6d %d is eating\n", philo->last_eat, philo->id,
+		philo->last_eat, philo->id, philo->last_eat, philo->id);
 	philo_sleep(philo->table->time_to_eat, philo);
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);

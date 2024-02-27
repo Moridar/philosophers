@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/27 13:57:26 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/27 16:45:58 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,12 @@ int	ms_since_start(t_philo *philo)
 	return ((now_usec() - philo->table->starttime_usec) / 1000);
 }
 
-static int	is_straved(t_philo *philo)
+static int	is_straved(t_philo *philo, t_table *table)
 {
 	if (ms_since_start(philo) - philo->last_eat < philo->table->time_to_die)
 		return (0);
-	printf("%6d philo %d died\n", ms_since_start(philo), philo->id);
+	table->exit = 1;
+	printf("%6d %d died\n", ms_since_start(philo), philo->id);
 	return (1);
 }
 
@@ -46,7 +47,7 @@ void	*table_start(void *arg)
 		i = 0;
 		while (i < table->num_of_philosophers)
 		{
-			if (is_straved(&table->philos[i]))
+			if (is_straved(&table->philos[i], table))
 				return (NULL);
 			i++;
 		}
@@ -56,7 +57,7 @@ void	*table_start(void *arg)
 			if (table->philos[i].meals_eaten < table->required_meals)
 				break ;
 			if (++i == table->num_of_philosophers)
-				return (NULL);
+				table->exit = 1;
 		}
 		usleep(1000);
 	}

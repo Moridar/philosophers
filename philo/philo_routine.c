@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 14:24:03 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 14:33:42 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int	get_fork(t_philo *philo)
 static int	philo_eat(t_philo *philo)
 {
 	while (philo->table->exit == 0 && get_fork(philo) == 0)
-		;
+		usleep(10);
 	philo->meals_eaten++;
 	if (philo->table->exit)
 		return (0);

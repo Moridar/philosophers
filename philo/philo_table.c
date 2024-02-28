@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 15:17:56 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 17:31:59 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,10 @@
 
 long	now_usec(void)
 {
-	long			now_usec;
 	struct timeval	curr;
 
 	gettimeofday(&curr, NULL);
-	now_usec = (curr.tv_sec * 1000000) + (curr.tv_usec);
-	return (now_usec);
+	return (curr.tv_sec * 1000000 + curr.tv_usec);
 }
 
 int	ms_since_start(t_philo *philo)
@@ -48,7 +46,7 @@ void	*table_start(void *arg)
 
 	table = arg;
 	table->starttime_usec = now_usec();
-	table->exit = 0;
+	pthread_mutex_unlock(&table->start);
 	while (table->exit == 0)
 	{
 		i = -1;

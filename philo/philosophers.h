@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 15:17:59 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 17:27:44 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,35 +18,30 @@
 
 typedef struct s_table	t_table;
 
-typedef struct s_fork
-{
-	int				free;
-	pthread_mutex_t	lock;
-}	t_fork;
-
 typedef struct s_philo
 {
-	int			id;
-	int			meals_eaten;
-	int			last_eat;
-	pthread_t	tid;
-	t_fork		*right_fork;
-	t_fork		*left_fork;
-	t_table		*table;
+	int				id;
+	int				meals_eaten;
+	int				last_eat;
+	pthread_t		tid;
+	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*left_fork;
+	t_table			*table;
 }	t_philo;
 
 typedef struct s_table
 {
-	int			num_of_philosophers;
-	int			time_to_die;
-	int			time_to_eat;
-	int			time_to_sleep;
-	int			required_meals;
-	int			exit;
-	long		starttime_usec;
-	t_fork		*forks;
-	pthread_t	tid;
-	t_philo		*philos;
+	int				num_of_philosophers;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				required_meals;
+	int				exit;
+	long			starttime_usec;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	start;
+	pthread_t		tid;
+	t_philo			*philos;
 }	t_table;
 
 long	set_alarm(int sleeptime);

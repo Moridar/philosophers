@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 15:22:05 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 17:44:01 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,67 +14,58 @@
 
 static int	philo_sleep(long wakeup, t_philo *philo)
 {
-	long	timeleft;
-
-	while (1)
+	while (wakeup > now_usec() + 500)
 	{
-		timeleft = wakeup - now_usec();
 		if (philo->table->exit)
 			return (0);
-		if (timeleft < 1500)
-			break ;
-		if (timeleft > 0)
-			usleep(1000);
+		usleep(500);
 	}
-	timeleft = wakeup - now_usec();
-	if (timeleft > 0)
-		usleep(timeleft);
+	while (wakeup > now_usec() + 100)
+	{
+		if (philo->table->exit)
+			return (0);
+		usleep(100);
+	}
 	return (1);
 }
 
 static int	get_fork(t_philo *philo)
 {
-	if (pthread_mutex_lock(&philo->left_fork->lock) != 0)
+	if (pthread_mutex_lock(philo->left_fork) != 0)
 		return (0);
-	if (!philo->left_fork->free)
-	{
-		pthread_mutex_unlock(&philo->left_fork->lock);
+	if (philo->table->exit)
+		return (1);
+	printf("%6d %d has taken a fork\n", ms_since_start(philo), philo->id);
+	if (pthread_mutex_lock(philo->right_fork) != 0)
 		return (0);
-	}
-	philo->left_fork->free = 0;
-	pthread_mutex_unlock(&philo->left_fork->lock);
-	if (pthread_mutex_lock(&philo->right_fork->lock) != 0)
-		return (0);
-	if (!philo->right_fork->free)
-	{
-		philo->left_fork->free = 1;
-		pthread_mutex_unlock(&philo->right_fork->lock);
-		return (0);
-	}
-	philo->right_fork->free = 0;
-	pthread_mutex_unlock(&philo->right_fork->lock);
+	if (philo->table->exit)
+		return (1);
+	printf("%6d %d has taken a fork\n", ms_since_start(philo), philo->id);
 	return (1);
 }
 
-static int	philo_eat(t_philo *philo)
+static void	philo_eat(t_philo *philo)
 {
 	long	alarm;
 
-	usleep(100);
-	while (philo->table->exit == 0 && get_fork(philo) == 0)
-		usleep(5);
+	if (get_fork(philo) == 0)
+	{
+		philo->table->exit = 2;
+		printf("Error: lock\n");
+	}
 	alarm = set_alarm(philo->table->time_to_eat);
 	philo->last_eat = ms_since_start(philo);
 	philo->meals_eaten++;
 	if (philo->table->exit)
-		return (0);
-	printf("%6d %d has taken a fork\n", ms_since_start(philo), philo->id);
-	printf("%6d %d has taken a fork\n", ms_since_start(philo), philo->id);
+	{
+		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
+		return ;
+	}
 	printf("%6d %d is eating\n", ms_since_start(philo), philo->id);
 	philo_sleep(alarm, philo);
-	philo->left_fork->free = 1;
-	philo->right_fork->free = 1;
-	return (1);
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
 }
 
 void	*philo_start(void *arg)
@@ -83,8 +74,10 @@ void	*philo_start(void *arg)
 	long			alarm;
 
 	philo = arg;
-	while (philo->table->exit == -1)
-		usleep(10);
+	pthread_mutex_lock(&philo->table->start);
+	pthread_mutex_unlock(&philo->table->start);
+	if (philo->id % 2 == 0)
+		usleep(150);
 	while (philo->table->exit == 0)
 	{
 		philo_eat(philo);

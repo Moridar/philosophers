@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 14:13:29 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:17:59 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_table
 	t_philo		*philos;
 }	t_table;
 
+long	set_alarm(int sleeptime);
 void	*philo_start(void *arg);
 void	*single_philo_start(void *arg);
 void	*table_start(void *arg);

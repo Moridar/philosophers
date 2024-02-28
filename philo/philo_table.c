@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 14:14:49 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 15:17:56 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ long	now_usec(void)
 int	ms_since_start(t_philo *philo)
 {
 	return ((now_usec() - philo->table->starttime_usec) / 1000);
+}
+
+long	set_alarm(int sleeptime)
+{
+	return (now_usec() + sleeptime * 1000);
 }
 
 static int	is_straved(t_philo *philo, t_table *table)

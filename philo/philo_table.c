@@ -6,15 +6,15 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/27 16:45:58 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 14:14:49 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-double	now_usec(void)
+long	now_usec(void)
 {
-	double			now_usec;
+	long			now_usec;
 	struct timeval	curr;
 
 	gettimeofday(&curr, NULL);
@@ -38,19 +38,18 @@ static int	is_straved(t_philo *philo, t_table *table)
 
 void	*table_start(void *arg)
 {
-	t_table	*table;
 	int		i;
+	t_table	*table;
 
 	table = arg;
+	table->starttime_usec = now_usec();
+	table->exit = 0;
 	while (table->exit == 0)
 	{
-		i = 0;
-		while (i < table->num_of_philosophers)
-		{
+		i = -1;
+		while (++i < table->num_of_philosophers)
 			if (is_straved(&table->philos[i], table))
 				return (NULL);
-			i++;
-		}
 		i = 0;
 		while (table->required_meals >= 0 && i < table->num_of_philosophers)
 		{

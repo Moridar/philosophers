@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/27 14:07:02 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/28 14:11:05 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ static void	event_start(t_table *table)
 	int				i;
 
 	i = 0;
-	table->starttime_usec = now_usec();
 	if (table->num_of_philosophers == 1)
 	{
 		pthread_create(&table->philos[0].tid, NULL,
@@ -33,7 +32,6 @@ static void	event_start(t_table *table)
 	}
 	pthread_create(&table->tid, NULL, table_start, (void *) table);
 	pthread_join(table->tid, NULL);
-	table->exit = 1;
 	while (--i > 0)
 		pthread_join(table->philos[i].tid, NULL);
 }
@@ -51,6 +49,7 @@ static int	philo_initialise(t_table *table)
 			= &table->forks[(i + 1) % table->num_of_philosophers];
 		table->philos[i].table = table;
 		table->philos[i].meals_eaten = 0;
+		table->philos[i].last_eat = 0;
 	}
 	return (1);
 }
@@ -59,7 +58,7 @@ static int	forks_initialise(t_table *table)
 {
 	int	i;
 
-	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_of_philosophers);
+	table->forks = malloc(sizeof(t_fork) * table->num_of_philosophers);
 	if (!table->forks)
 	{
 		free(table->philos);
@@ -69,15 +68,16 @@ static int	forks_initialise(t_table *table)
 	i = 0;
 	while (i < table->num_of_philosophers)
 	{
-		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
+		if (pthread_mutex_init(&table->forks[i].lock, NULL) != 0)
 		{
 			while (--i >= 0)
-				pthread_mutex_destroy(&table->forks[i]);
+				pthread_mutex_destroy(&table->forks[i].lock);
 			printf("Error: Mutex\n");
 			free(table->forks);
 			free(table->philos);
 			return (0);
 		}
+		table->forks[i].free = 1;
 		i++;
 	}
 	return (1);
@@ -85,7 +85,7 @@ static int	forks_initialise(t_table *table)
 
 static int	table_initialise(int argc, char **argv, t_table *table)
 {
-	table->exit = 0;
+	table->exit = -1;
 	table->num_of_philosophers = ft_atoi(argv[1]);
 	table->time_to_die = ft_atoi(argv[2]);
 	table->time_to_eat = ft_atoi(argv[3]);
@@ -121,7 +121,7 @@ int	main(int argc, char **argv)
 	event_start(&table);
 	i = 0;
 	while (i < table.num_of_philosophers)
-		pthread_mutex_destroy(&table.forks[i++]);
+		pthread_mutex_destroy(&table.forks[i++].lock);
 	free(table.forks);
 	free(table.philos);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/29 11:02:09 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:02:11 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ static int	table_initialise(int argc, char **argv, t_table *table)
 	if (argc == 6)
 		table->required_meals = ft_atoi(argv[5]);
 	if (table->num_of_philosophers <= 0 || table->time_to_die <= 0
-		|| table->time_to_eat <= 0 || table->time_to_sleep <= 0 ||
-		(argc == 6 && table->required_meals < 0))
+		|| table->time_to_eat <= 0 || table->time_to_sleep <= 0
+		|| (argc == 6 && table->required_meals < 0))
 	{
 		printf("Error: Arguments must be non-zero positive number\n");
 		return (0);

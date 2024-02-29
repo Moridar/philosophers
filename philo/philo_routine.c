@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 17:44:01 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/29 10:15:23 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,20 @@
 
 static int	philo_sleep(long wakeup, t_philo *philo)
 {
-	while (wakeup > now_usec() + 500)
+	while (wakeup > now_msec())
 	{
 		if (philo->table->exit)
 			return (0);
 		usleep(500);
 	}
-	while (wakeup > now_usec() + 100)
+	while (wakeup > now_msec())
 	{
-		if (philo->table->exit)
-			return (0);
 		usleep(100);
 	}
 	return (1);
 }
 
-static int	get_fork(t_philo *philo)
+static int	get_fork(t_philo *philo, long *alarm)
 {
 	if (pthread_mutex_lock(philo->left_fork) != 0)
 		return (0);
@@ -38,6 +36,7 @@ static int	get_fork(t_philo *philo)
 	printf("%6d %d has taken a fork\n", ms_since_start(philo), philo->id);
 	if (pthread_mutex_lock(philo->right_fork) != 0)
 		return (0);
+	*alarm = set_alarm(philo->table->time_to_eat);
 	if (philo->table->exit)
 		return (1);
 	printf("%6d %d has taken a fork\n", ms_since_start(philo), philo->id);
@@ -48,12 +47,11 @@ static void	philo_eat(t_philo *philo)
 {
 	long	alarm;
 
-	if (get_fork(philo) == 0)
+	if (get_fork(philo, &alarm) == 0)
 	{
 		philo->table->exit = 2;
 		printf("Error: lock\n");
 	}
-	alarm = set_alarm(philo->table->time_to_eat);
 	philo->last_eat = ms_since_start(philo);
 	philo->meals_eaten++;
 	if (philo->table->exit)
@@ -77,7 +75,7 @@ void	*philo_start(void *arg)
 	pthread_mutex_lock(&philo->table->start);
 	pthread_mutex_unlock(&philo->table->start);
 	if (philo->id % 2 == 0)
-		usleep(150);
+		usleep(5000);
 	while (philo->table->exit == 0)
 	{
 		philo_eat(philo);

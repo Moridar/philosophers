@@ -6,28 +6,28 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 17:31:59 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/29 10:16:43 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-long	now_usec(void)
+long	now_msec(void)
 {
 	struct timeval	curr;
 
 	gettimeofday(&curr, NULL);
-	return (curr.tv_sec * 1000000 + curr.tv_usec);
+	return (curr.tv_sec * 1000 + curr.tv_usec / 1000);
 }
 
 int	ms_since_start(t_philo *philo)
 {
-	return ((now_usec() - philo->table->starttime_usec) / 1000);
+	return ((now_msec() - philo->table->starttime_msec));
 }
 
 long	set_alarm(int sleeptime)
 {
-	return (now_usec() + sleeptime * 1000);
+	return (now_msec() + sleeptime);
 }
 
 static int	is_straved(t_philo *philo, t_table *table)
@@ -45,7 +45,7 @@ void	*table_start(void *arg)
 	t_table	*table;
 
 	table = arg;
-	table->starttime_usec = now_usec();
+	table->starttime_msec = now_msec();
 	pthread_mutex_unlock(&table->start);
 	while (table->exit == 0)
 	{

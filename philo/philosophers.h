@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/28 17:27:44 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/29 10:16:30 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ typedef struct s_table
 	int				time_to_sleep;
 	int				required_meals;
 	int				exit;
-	long			starttime_usec;
+	long			starttime_msec;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	start;
 	pthread_t		tid;
@@ -48,7 +48,7 @@ long	set_alarm(int sleeptime);
 void	*philo_start(void *arg);
 void	*single_philo_start(void *arg);
 void	*table_start(void *arg);
-long	now_usec(void);
+long	now_msec(void);
 int		ms_since_start(t_philo *philo);
 int		ft_isonlydigits(char *str);
 int		ft_atoi(const char *str);

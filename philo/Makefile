@@ -6,17 +6,18 @@
 #    By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/10 20:43:18 by bsyvasal          #+#    #+#              #
-#    Updated: 2024/02/22 13:39:57 by bsyvasal         ###   ########.fr        #
+#    Updated: 2024/02/29 11:01:52 by bsyvasal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
-FILES =	philosophers \
-		philo_routine \
+FILES =	philo_main \
+		philo_philo \
 		philo_utils \
-		philo_table
+		philo_table \
+		philo_clock
 		
 SRCS = $(addsuffix .c, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))

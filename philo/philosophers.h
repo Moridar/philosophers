@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/29 10:16:30 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/29 11:02:43 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,13 @@ typedef struct s_table
 	int				exit;
 	long			starttime_msec;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	start;
-	pthread_t		tid;
 	t_philo			*philos;
 }	t_table;
 
 long	set_alarm(int sleeptime);
 void	*philo_start(void *arg);
 void	*single_philo_start(void *arg);
-void	*table_start(void *arg);
+void	event_start(t_table *table);
 long	now_msec(void);
 int		ms_since_start(t_philo *philo);
 int		ft_isonlydigits(char *str);

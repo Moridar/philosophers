@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/02/29 12:04:41 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/02/29 12:08:22 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ int	main(int argc, char **argv)
 
 	if (argc <= 1)
 		printf("Usage: ./philo num_of_philo time_to_die time_to_eat "
-			"time_to_sleep (num_of_meals)\n");
+			"time_to_sleep [num_of_meals]\n");
 	if (argc < 5 || argc > 6)
 		return (printf("Error: Number of arguments\n"));
 	i = 0;

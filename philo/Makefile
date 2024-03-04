@@ -6,13 +6,14 @@
 #    By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/10 20:43:18 by bsyvasal          #+#    #+#              #
-#    Updated: 2024/03/04 17:02:33 by bsyvasal         ###   ########.fr        #
+#    Updated: 2024/03/04 17:04:21 by bsyvasal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -fsanitize=thread -g
+#CFLAGS = -Wall -Werror -Wextra -fsanitize=thread -g
+CFLAGS = -Wall -Werror -Wextra
 FILES =	philo_main \
 		philo_philo \
 		philo_single \

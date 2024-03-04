@@ -6,15 +6,16 @@
 #    By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/10 20:43:18 by bsyvasal          #+#    #+#              #
-#    Updated: 2024/02/29 11:01:52 by bsyvasal         ###   ########.fr        #
+#    Updated: 2024/03/04 17:02:33 by bsyvasal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 CC = cc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -fsanitize=thread -g
 FILES =	philo_main \
 		philo_philo \
+		philo_single \
 		philo_utils \
 		philo_table \
 		philo_clock

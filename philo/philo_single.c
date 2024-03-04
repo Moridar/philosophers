@@ -1,31 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_clock.c                                      :+:      :+:    :+:   */
+/*   philo_single.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/29 11:01:09 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/04 17:02:36 by bsyvasal         ###   ########.fr       */
+/*   Created: 2024/03/04 17:01:03 by bsyvasal          #+#    #+#             */
+/*   Updated: 2024/03/04 17:01:11 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-long	now_msec(void)
+void	*single_philo_start(void *arg)
 {
-	struct timeval	curr;
+	t_philo			*philo;
 
-	gettimeofday(&curr, NULL);
-	return (curr.tv_sec * 1000 + curr.tv_usec / 1000);
-}
-
-int	ms_since_start(long start_time)
-{
-	return ((now_msec() - start_time));
-}
-
-long	set_alarm(int sleeptime)
-{
-	return (now_msec() + sleeptime);
+	philo = arg;
+	printf("%6d 1 has taken a fork\n", 0);
+	usleep(philo->table->time_to_die * 1000);
+	printf("%6d 1 has died\n", philo->table->time_to_die);
+	return (NULL);
 }

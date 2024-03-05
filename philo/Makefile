@@ -6,20 +6,22 @@
 #    By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/10 20:43:18 by bsyvasal          #+#    #+#              #
-#    Updated: 2024/03/04 17:04:21 by bsyvasal         ###   ########.fr        #
+#    Updated: 2024/03/05 12:52:31 by bsyvasal         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 CC = cc
-#CFLAGS = -Wall -Werror -Wextra -fsanitize=thread -g
 CFLAGS = -Wall -Werror -Wextra
+# CFLAGS = -Wall -Werror -Wextra -pthread
 FILES =	philo_main \
 		philo_philo \
 		philo_single \
 		philo_utils \
 		philo_table \
-		philo_clock
+		philo_clock \
+		philo_exit \
+		philo_initialization
 		
 SRCS = $(addsuffix .c, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))

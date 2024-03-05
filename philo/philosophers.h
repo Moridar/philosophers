@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/04 16:59:16 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/05 11:13:02 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ typedef struct s_philo
 	int				last_eat;
 	int				exit;
 	pthread_t		tid;
-	pthread_mutex_t	data;
+	pthread_mutex_t	l_meal;
+	pthread_mutex_t	l_exit;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
 	int				time_to_eat;
@@ -48,7 +49,7 @@ typedef struct s_table
 	t_philo			*philos;
 }	t_table;
 
-void	*single_philo_start(void *arg);
+void	single_philo(t_table *table);
 void	*philo_start(void *arg);
 void	event_start(t_table *table);
 long	now_msec(void);
@@ -56,3 +57,8 @@ int		ms_since_start(long starttime);
 long	set_alarm(int sleeptime);
 int		ft_isonlydigits(char *str);
 int		ft_atoi(const char *str);
+int		errmsg(int value, char *msg);
+void	clean_memory(int num, t_table *table);
+int		table_initialise(int argc, char **argv, t_table *table);
+int		locks_initialise(t_table *table);
+int		philo_initialise(t_table *table);

@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/04 17:02:43 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/05 11:38:48 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ static int	is_exit(t_philo *philo)
 {
 	int	exit;
 
-	pthread_mutex_lock(&philo->data);
+	pthread_mutex_lock(&philo->l_exit);
 	exit = philo->exit;
-	pthread_mutex_unlock(&philo->data);
+	pthread_mutex_unlock(&philo->l_exit);
 	return (exit);
 }
 
@@ -31,25 +31,30 @@ static int	philo_sleep(long wakeup, t_philo *philo)
 		usleep(500);
 	}
 	while (wakeup > now_msec())
-	{
 		usleep(100);
-	}
 	return (1);
 }
 
 static int	get_fork(t_philo *philo, long *alarm)
 {
 	if (pthread_mutex_lock(philo->left_fork) != 0)
-		return (0);
+		return (errmsg(0, "Error: lock\n"));
 	if (is_exit(philo))
-		return (1);
+	{
+		pthread_mutex_unlock(philo->left_fork);
+		return (0);
+	}
 	printf("%6d %d has taken a fork\n",
 		ms_since_start(philo->starttime), philo->id);
 	if (pthread_mutex_lock(philo->right_fork) != 0)
-		return (0);
+		return (errmsg(0, "Error: lock\n"));
 	*alarm = set_alarm(philo->time_to_eat);
 	if (is_exit(philo))
-		return (1);
+	{
+		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
+		return (0);
+	}
 	printf("%6d %d has taken a fork\n",
 		ms_since_start(philo->starttime), philo->id);
 	return (1);
@@ -60,14 +65,11 @@ static void	philo_eat(t_philo *philo)
 	long	alarm;
 
 	if (get_fork(philo, &alarm) == 0)
-	{
-		printf("Error: lock\n");
 		return ;
-	}
-	pthread_mutex_lock(&philo->data);
+	pthread_mutex_lock(&philo->l_meal);
 	philo->last_eat = ms_since_start(philo->starttime);
 	philo->meals_eaten++;
-	pthread_mutex_unlock(&philo->data);
+	pthread_mutex_unlock(&philo->l_meal);
 	if (is_exit(philo))
 	{
 		pthread_mutex_unlock(philo->left_fork);
@@ -86,10 +88,10 @@ void	*philo_start(void *arg)
 	long			alarm;
 
 	philo = arg;
-	philo->starttime = now_msec();
 	pthread_mutex_lock(&philo->table->start);
+	philo->starttime = philo->table->starttime_msec;
 	pthread_mutex_unlock(&philo->table->start);
-	if (philo->id % 2 == 0)
+	if (!is_exit(philo) && philo->id % 2 == 0)
 		usleep(10000);
 	while (is_exit(philo) == 0)
 	{
@@ -107,4 +109,3 @@ void	*philo_start(void *arg)
 	}
 	return (NULL);
 }
-

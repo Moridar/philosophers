@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/06 15:50:50 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/06 16:03:01 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,11 @@ static int	check_eaten(t_table *table)
 
 static int	table_start(t_table *table)
 {
-	table->starttime_msec = now_msec();
+	table->starttime_msec = now_msec() + 1;
+	while (now_msec() != table->starttime_msec)
+		usleep(1);
 	if (pthread_mutex_unlock(&table->lock) != 0)
-		return (0);
+		return (errmsg(0, "Error: unlock"));
 	while (1)
 	{
 		if (is_straved(table))
@@ -118,10 +120,10 @@ void	event_start(t_table *table)
 			announce_exit(table, 0);
 			pthread_mutex_unlock(&table->lock);
 			printf("Error: Couldn't create pthread\n");
-			break ;
+			return ;
 		}
 	}
-	if (i == table->num_of_philosophers && table_start(table) == 0)
+	if (table_start(table) == 0)
 		return ;
 	i = -1;
 	while (++i < table->num_of_philosophers)

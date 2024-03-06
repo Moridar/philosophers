@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/06 12:14:58 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/06 15:50:50 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static int	is_straved(t_table *table)
 		if (pthread_mutex_unlock(&table->philos[i].l_meal) != 0)
 			errexit(0, "Error: unlock", table);
 		straved = ms_since_start(table->starttime_msec) - last_eat
-			>= table->time_to_die;
+			> table->time_to_die;
 		i++;
 		if (straved)
 		{

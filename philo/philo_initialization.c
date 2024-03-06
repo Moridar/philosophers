@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   initialization.c                                   :+:      :+:    :+:   */
+/*   philo_initialization.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 10:43:14 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/05 11:09:30 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/06 11:33:57 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ static int	philo_locks_initialise(t_table *table)
 
 int	locks_initialise(t_table *table)
 {
-	if (pthread_mutex_init(&table->start, NULL) != 0)
+	if (pthread_mutex_init(&table->lock, NULL) != 0)
 	{
 		free(table->philos);
 		return (errmsg(0, "Error: Mutex\n"));
@@ -102,6 +102,7 @@ int	locks_initialise(t_table *table)
 
 int	table_initialise(int argc, char **argv, t_table *table)
 {
+	table->exit = 0;
 	table->num_of_philosophers = ft_atoi(argv[1]);
 	table->time_to_die = ft_atoi(argv[2]);
 	table->time_to_eat = ft_atoi(argv[3]);

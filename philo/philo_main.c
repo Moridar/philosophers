@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/05 11:13:15 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:21:20 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,10 @@ int	main(int argc, char **argv)
 {
 	t_table			table;
 
-	if (!validate_input(argc, argv))
+	if (validate_input(argc, argv) == 0)
 		return (1);
 	if (initalise(argc, argv, &table) == 0)
-		return (0);
+		return (1);
 	event_start(&table);
 	clean_memory(5, &table);
 	return (0);

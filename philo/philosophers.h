@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:48:00 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/05 11:13:02 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:53:50 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ typedef struct s_table
 	int				required_meals;
 	int				exit;
 	long			starttime_msec;
-	pthread_mutex_t	start;
+	pthread_mutex_t	lock;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
 }	t_table;
@@ -62,3 +62,6 @@ void	clean_memory(int num, t_table *table);
 int		table_initialise(int argc, char **argv, t_table *table);
 int		locks_initialise(t_table *table);
 int		philo_initialise(t_table *table);
+int		errexit(int value, char *msg, t_table *table);
+int		check_exit(t_table *table);
+void	thread_exit(t_table *table);

@@ -6,39 +6,56 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:27:24 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/05 12:17:38 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/06 11:35:00 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-static	void	announce_exit(t_table *table)
+static int	announce_exit(t_table *table)
 {
 	int	i;
 
 	i = 0;
 	while (i < table->num_of_philosophers)
+		if (pthread_mutex_lock(&table->philos[i++].l_exit) != 0)
+			return (0);
+	i = 0;
+	while (i < table->num_of_philosophers)
 	{
-		pthread_mutex_lock(&table->philos[i].l_exit);
 		table->philos[i].exit = 1;
-		pthread_mutex_unlock(&table->philos[i].l_exit);
+		if (pthread_mutex_unlock(&table->philos[i].l_exit) != 0)
+			return (0);
 		i++;
 	}
+	return (1);
 }
 
-static int	is_straved(t_philo *philo, t_table *table)
+static int	is_straved(t_table *table)
 {
 	int	straved;
+	int	last_eat;
+	int	i;
 
-	pthread_mutex_lock(&philo->l_meal);
-	straved = ms_since_start(table->starttime_msec) - philo->last_eat
-		>= table->time_to_die;
-	pthread_mutex_unlock(&philo->l_meal);
-	if (!straved)
-		return (0);
-	announce_exit(table);
-	printf("%6d %d died\n", ms_since_start(philo->starttime), philo->id);
-	return (1);
+	i = 0;
+	while (i < table->num_of_philosophers)
+	{
+		if (pthread_mutex_lock(&table->philos[i].l_meal) != 0)
+			errexit(1, "Error: lock", table);
+		last_eat = table->philos[i].last_eat;
+		if (pthread_mutex_unlock(&table->philos[i].l_meal) != 0)
+			errexit(1, "Error: unlock", table);
+		straved = ms_since_start(table->starttime_msec) - last_eat
+			>= table->time_to_die;
+		i++;
+		if (straved)
+		{
+			announce_exit(table);
+			printf("%6d %d died\n", ms_since_start(table->starttime_msec), i);
+			return (1);
+		}
+	}
+	return (0);
 }
 
 static int	check_eaten(t_table *table)
@@ -48,40 +65,38 @@ static int	check_eaten(t_table *table)
 	i = 0;
 	while (i < table->num_of_philosophers)
 	{
-		pthread_mutex_lock(&table->philos[i].l_meal);
+		if (pthread_mutex_lock(&table->philos[i].l_meal) != 0)
+			return (errexit(0, "Error: lock", table));
 		if (table->philos[i].meals_eaten < table->required_meals)
 		{
-			pthread_mutex_unlock(&table->philos[i].l_meal);
+			if (pthread_mutex_unlock(&table->philos[i].l_meal) != 0)
+				errexit(0, "Error: unlock", table);
 			return (0);
 		}
-		pthread_mutex_unlock(&table->philos[i].l_meal);
+		if (pthread_mutex_unlock(&table->philos[i].l_meal) != 0)
+			return (errexit(0, "Error: unlock", table));
 		i++;
 	}
-	if (i == table->num_of_philosophers)
-		announce_exit(table);
+	announce_exit(table);
 	return (1);
 }
 
-static void	table_start(t_table *table)
+static int	table_start(t_table *table)
 {
-	int		i;
-
 	table->starttime_msec = now_msec();
-	i = -1;
-	pthread_mutex_unlock(&table->start);
-	pthread_mutex_lock(&table->start);
-	pthread_mutex_unlock(&table->start);
+	if (pthread_mutex_unlock(&table->lock) != 0)
+		return (0);
 	while (1)
 	{
-		i = -1;
-		while (++i < table->num_of_philosophers)
-			if (is_straved(&table->philos[i], table))
-				return ;
-		if (table->required_meals >= 0)
-			if (check_eaten(table))
-				return ;
+		if (is_straved(table))
+			return (1);
+		if (table->required_meals >= 0 && check_eaten(table))
+			return (1);
+		if (check_exit(table))
+			return (announce_exit(table));
 		usleep(500);
 	}
+	return (0);
 }
 
 void	event_start(t_table *table)
@@ -90,22 +105,21 @@ void	event_start(t_table *table)
 
 	if (table->num_of_philosophers == 1)
 		return (single_philo(table));
-	pthread_mutex_lock(&table->start);
+	pthread_mutex_lock(&table->lock);
 	i = -1;
 	while (++i < table->num_of_philosophers)
 	{
 		if (pthread_create(&table->philos[i].tid, NULL,
 				philo_start, (void *) &table->philos[i]) != 0)
 		{
-			i = -1;
 			announce_exit(table);
-			pthread_mutex_unlock(&table->start);
+			pthread_mutex_unlock(&table->lock);
 			printf("Error: Couldn't create pthread\n");
 			break ;
 		}
 	}
-	if (i >= 1)
-		table_start(table);
+	if (i == table->num_of_philosophers && table_start(table) == 0)
+		return ;
 	i = -1;
 	while (++i < table->num_of_philosophers)
 		pthread_join(table->philos[i].tid, NULL);

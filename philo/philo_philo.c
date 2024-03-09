@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:35:51 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/06 12:12:43 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/10 00:38:06 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ static int	get_fork(t_philo *philo, long *alarm)
 {
 	if (pthread_mutex_lock(philo->left_fork) != 0)
 		return (errexit(0, "Error: lock", philo->table));
-	print_checkexit(philo, " has taken a fork");
+	print_checkexit(philo, "has taken a fork");
 	if (pthread_mutex_lock(philo->right_fork) != 0)
 		return (errexit(0, "Error: lock", philo->table));
 	*alarm = set_alarm(philo->time_to_eat);
-	print_checkexit(philo, " has taken a fork");
+	print_checkexit(philo, "has taken a fork");
 	return (1);
 }
 
@@ -78,10 +78,10 @@ void	*philo_start(void *arg)
 
 	philo = arg;
 	if (pthread_mutex_lock(&philo->table->lock) != 0)
-		errexit(0, "Error: lock\n", philo->table);
+		errexit(0, "Error: lock", philo->table);
 	philo->starttime = philo->table->starttime_msec;
 	if (pthread_mutex_unlock(&philo->table->lock) != 0)
-		errexit(0, "Error: unlock\n", philo->table);
+		errexit(0, "Error: unlock", philo->table);
 	if (philo->id % 2 == 0)
 		usleep(10000);
 	while (1)

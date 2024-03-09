@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 17:01:03 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/05 10:42:32 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/10 00:44:14 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@ static void	*single_philo_thread(void *arg)
 	t_philo			*philo;
 
 	philo = arg;
-	printf("%6d 1 has taken a fork\n", 0);
+	philo->starttime = now_msec();
+	printf("%6d 1 has taken a fork\n", ms_since_start(philo->starttime));
 	usleep(philo->table->time_to_die * 1000);
-	printf("%6d 1 has died\n", philo->table->time_to_die);
+	printf("%6d 1 has died\n", ms_since_start(philo->starttime));
 	return (NULL);
 }
 
@@ -30,5 +31,4 @@ void	single_philo(t_table *table)
 		pthread_join(table->philos[0].tid, NULL);
 	else
 		printf("Error: Couldn't create pthread\n");
-	return ;
 }

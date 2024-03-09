@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 10:43:14 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/06 11:33:57 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/10 00:40:20 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	forks_initialise(t_table *table)
 	if (!table->forks)
 	{
 		clean_memory(1, table);
-		return (errmsg(0, "Error: Malloc\n"));
+		return (errmsg(0, "Error: Malloc"));
 	}
 	i = -1;
 	while (++i < table->num_of_philosophers)
@@ -51,7 +51,7 @@ static int	forks_initialise(t_table *table)
 			while (--i >= 0)
 				pthread_mutex_destroy(&table->forks[i]);
 			clean_memory(2, table);
-			return (errmsg(0, "Error: Mutex\n"));
+			return (errmsg(0, "Error: Mutex"));
 		}
 	}
 	return (1);
@@ -69,7 +69,7 @@ static int	philo_locks_initialise(t_table *table)
 			while (--i >= 0)
 				pthread_mutex_destroy(&table->philos[i].l_exit);
 			clean_memory(3, table);
-			return (errmsg(0, "Error: Mutex\n"));
+			return (errmsg(0, "Error: Mutex"));
 		}
 	}
 	i = -1;
@@ -80,7 +80,7 @@ static int	philo_locks_initialise(t_table *table)
 			while (--i >= 0)
 				pthread_mutex_destroy(&table->philos[i].l_meal);
 			clean_memory(4, table);
-			return (errmsg(0, "Error: Mutex\n"));
+			return (errmsg(0, "Error: Mutex"));
 		}
 	}
 	return (1);
@@ -91,7 +91,7 @@ int	locks_initialise(t_table *table)
 	if (pthread_mutex_init(&table->lock, NULL) != 0)
 	{
 		free(table->philos);
-		return (errmsg(0, "Error: Mutex\n"));
+		return (errmsg(0, "Error: Mutex"));
 	}
 	if (forks_initialise(table) == 0)
 		return (0);
@@ -113,10 +113,9 @@ int	table_initialise(int argc, char **argv, t_table *table)
 	if (table->num_of_philosophers <= 0 || table->time_to_die <= 0
 		|| table->time_to_eat <= 0 || table->time_to_sleep <= 0
 		|| (argc == 6 && table->required_meals < 0))
-		return (errmsg(0,
-				"Error: Arguments must be non-zero positive number\n"));
+		return (errmsg(0, "Error: Args must be non-zero positive number"));
 	table->philos = malloc(sizeof(t_philo) * table->num_of_philosophers);
 	if (table->philos == NULL)
-		return (errmsg(0, "Error: Malloc\n"));
+		return (errmsg(0, "Error: Malloc"));
 	return (1);
 }

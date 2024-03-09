@@ -6,7 +6,7 @@
 /*   By: bsyvasal <bsyvasal@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:47:15 by bsyvasal          #+#    #+#             */
-/*   Updated: 2024/03/06 10:21:20 by bsyvasal         ###   ########.fr       */
+/*   Updated: 2024/03/10 00:38:34 by bsyvasal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ static int	validate_input(int argc, char **argv)
 		printf("Usage: ./philo num_of_philo time_to_die time_to_eat "
 			"time_to_sleep [num_of_meals]\n");
 	if (argc < 5 || argc > 6)
-		return (errmsg(0, "Error: Number of arguments\n"));
+		return (errmsg(0, "Error: Number of arguments"));
 	i = 0;
 	while (++i < argc)
 		if (!ft_isonlydigits(argv[i]))
-			return (errmsg(0, "Error: Illegal arguments\n"));
+			return (errmsg(0, "Error: Illegal arguments"));
 	return (1);
 }
 
